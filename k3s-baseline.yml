@@ -1,0 +1,32 @@
+---
+- name: Ensure K3s is installed and running
+  hosts: observer
+  become: true
+
+  tasks:
+    - name: Check if K3s binary is already installed
+      ansible.builtin.command: which k3s
+      register: k3s_check
+      changed_when: false
+      failed_when: false
+      check_mode: false
+
+    - name: Install K3s if not already present
+      ansible.builtin.shell: curl -sfL https://get.k3s.io | sh -
+      when: k3s_check.rc != 0
+
+    - name: Ensure K3s service is running and enabled
+      ansible.builtin.service:
+        name: k3s
+        state: started
+        enabled: true
+
+    - name: Confirm cluster is healthy
+      ansible.builtin.command: k3s kubectl get nodes
+      register: node_status
+      changed_when: false
+      check_mode: false
+
+    - name: Show node status
+      ansible.builtin.debug:
+        var: node_status.stdout_lines
