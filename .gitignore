@@ -1,0 +1,7 @@
+# Never commit these
+*vault_pass*
+.ansible_vault_pass
+*.pem
+ansible_key
+ansible_key.pub
+*.retry

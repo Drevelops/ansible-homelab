@@ -1,0 +1,9 @@
+---
+- name: Confirm vault variable is accessible
+  hosts: homelab
+  become: false
+
+  tasks:
+    - name: Show that the vaulted variable decrypted correctly
+      ansible.builtin.debug:
+        msg: "DB password starts with: {{ vault_recipe_db_password[:3] }}***"

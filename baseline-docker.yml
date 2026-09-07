@@ -1,0 +1,31 @@
+---
+- name: Ensure Docker is installed and configured
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Check if Docker is already installed
+      ansible.builtin.command: which docker
+      register: docker_check
+      changed_when: false
+      failed_when: false
+      check_mode: false
+
+    - name: Install Docker (docker.io) if not already present
+      ansible.builtin.apt:
+        name: docker.io
+        state: present
+        update_cache: true
+      when: docker_check.rc != 0
+
+    - name: Ensure Docker service is running and enabled
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Ensure the user is in the docker group
+      ansible.builtin.user:
+        name: "{{ ansible_user_id }}"
+        groups: docker
+        append: true
