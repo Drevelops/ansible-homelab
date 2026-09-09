@@ -4,10 +4,31 @@ prometheus:
     resources:
       requests:
         memory: 256Mi
-        cpu: 100m
+        cpu: 150m
       limits:
-        memory: 512Mi
+        memory: 768Mi
         cpu: 500m
+prometheus:
+  prometheusSpec:
+    retention: 7d
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 150m
+      limits:
+        memory: 768Mi
+        cpu: 500m
+    additionalScrapeConfigs:
+      - job_name: 'hpstream-node-exporter'
+        static_configs:
+          - targets: ['192.168.1.155:9100']
+            labels:
+              instance: 'hpstream'
+      - job_name: 'hpstream-cadvisor'
+        static_configs:
+          - targets: ['192.168.1.155:8082']
+            labels:
+              instance: 'hpstream'
 
 grafana:
   resources:
